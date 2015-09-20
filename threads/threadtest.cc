@@ -466,9 +466,9 @@ void TestSuite() {
 const int CLERK_NUMBER = 20;
 const int CUSTOMER_NUMBER = 60;
 const int CLERK_TYPES = 4;
-const int clerkCount = 5; //TODO make thhis NOT const and chhange to user input with cin >>
-const int customerCount = 25; //TODO make thhis NOT const and chhange to user input with cin >>
-int senatorCount = 1; //TODO make this NOT const and chhange to user input with cin >>
+const int clerkCount = 5; //TODO make this NOT const and change to user input with cin >>
+const int customerCount = 25; //TODO make this NOT const and change to user input with cin >>
+int senatorCount = 0; //TODO make this NOT const and change to user input with cin >>
 int senatorLineCount = 0;
 
 Lock* clerkLineLock = new Lock("ClerkLineLock");
@@ -512,14 +512,13 @@ char* cStringDeepCopy(string str) {
     return cstr;
 }
 
-void clerkFactory() {
+void clerkFactory(int countOfEachClerkType[]) {
     int tempClerkCount = 0;
-    int array[4] = {1,1,1,2};
     for(int i = 0; i < CLERK_TYPES; ++i) {
-        cout << clerkTypesStatic[i] << array[i] << endl;
+        cout << clerkTypesStatic[i] << countOfEachClerkType[i] << endl;
         //cin >> tempClerkCount;
         //clerkArray[i] = tempClerkCount;
-        clerkArray[i] = array[i];
+        clerkArray[i] = countOfEachClerkType[i];
     }
 }
 
@@ -611,7 +610,7 @@ void createClerkLocksAndConditions() {
         // delete [] name;
 
         sstm.str(string());
-        sstm << "breakCV_" << i;
+        sstm << "BreakCV_" << i;
         name = cStringDeepCopy(sstm.str());
         breakCV[i] = new Condition(name);
         // delete [] name;
@@ -648,22 +647,36 @@ void createSenatorThreads(Thread *t){
     }
 }
 
+void createTestVariables(Thread* t) {
+    createClerkLocksAndConditions();
+    clerkFactory();
+    createClerkThreads(t);
+    createCustomerThreads(t);
+    createSenatorThreads(t);
+    t->Fork((VoidFunctionPtr)Manager,0);
+}
+
 void Part2() {
     Thread *t;
     char *name;
 
     printf("Starting Part 2\n");
 
-    createClerkLocksAndConditions();
-    clerkFactory();
-    createClerkThreads(t);
-    createCustomerThreads(t);
-    createSenatorThreads(t);
-    t->Fork((VoidFunctionPtr)Manager,0); // TODO: start Manager thread
+    
+    // TODO: start Manager thread
     //t->Fork((VoidFunctionPtr)Senator,i); // TODO: start Senator thread
 
     printf("Starting Test 1\n");
+    customerCount = 5;
+    clerkCount = 2;
+    senatorCount = 0;
+    countOfEachClerkType = {1,1,0,0};
+    createTestVariables();
 
+    printf("Starting Test 2\n");
+    customerCount = ;
+    clerkCount = 4;
+    createTestVariables();
 }
 
 int chooseCustomerFromLine(int myLine) {
