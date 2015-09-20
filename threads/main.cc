@@ -101,7 +101,7 @@ main(int argc, char **argv)
 if (!strcmp(*argv, "-T"))               // Test Suite
     TestSuite();
 if (!strcmp(*argv, "-P2"))               // Problem 2
-    Problem2();
+    Part2();
 #endif //THREADS
 
 #ifdef USER_PROGRAM
