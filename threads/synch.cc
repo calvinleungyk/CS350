@@ -70,8 +70,8 @@ Semaphore::P()
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     while (value == 0) { 			// semaphore not available
-    queue->Append((void *)currentThread);	// so go to sleep
-    currentThread->Sleep();
+        queue->Append((void *)currentThread);	// so go to sleep
+        currentThread->Sleep();
     }
     value--; 					// semaphore available,
                         // consume its value
@@ -95,7 +95,7 @@ Semaphore::V()
 
     thread = (Thread *)queue->Remove();
     if (thread != NULL)	   // make thread ready, consuming the V immediately
-    scheduler->ReadyToRun(thread);
+        scheduler->ReadyToRun(thread);
     value++;
     (void) interrupt->SetLevel(oldLevel);
 }
@@ -119,7 +119,7 @@ Lock::~Lock()
 void Lock::Acquire()
 {
     IntStatus oldLevel = interrupt->SetLevel(IntOff); //disable interrupts
-    cout << "Current thread name: " << currentThread->getName() << " > is trying to acquire lock: " << this->getName() << endl;
+    //cout << "Current thread name: " << currentThread->getName() << " > is trying to acquire lock: " << this->getName() << endl;
     if(currentThread == lockOwner) //current thread is lock owner
     {
         (void) interrupt->SetLevel(oldLevel); //restore interrupts
@@ -146,7 +146,7 @@ void Lock::Release()
     IntStatus oldLevel = interrupt->SetLevel(IntOff); //disable interrupts
     if(currentThread != lockOwner) //current thread is not lock owner
     {
-        printf("Lock::Release::(currentThread != lockOwner)::Current thread is not lock owner\n");
+        //printf("Lock::Release::(currentThread != lockOwner)::Current thread is not lock owner\n");
         (void) interrupt->SetLevel(oldLevel); //restore interrupts
         return;
     }
@@ -169,7 +169,7 @@ void Lock::Release()
 
 void Lock::Print()
 {
-    printf("Lock waitQueue contents:\n");
+    //printf("Lock waitQueue contents:\n");
     waitQueue->Mapcar((VoidFunctionPtr) ThreadPrint);
 }
 
@@ -192,7 +192,7 @@ void Condition::Wait(Lock* conditionLock)
     IntStatus oldLevel = interrupt->SetLevel(IntOff); //disable interrupts
     if(conditionLock == NULL)
     {
-        printf("Condition::Wait::(conditionLock == NULL)::There is no lock to be acquired\n");
+        //printf("Condition::Wait::(conditionLock == NULL)::There is no lock to be acquired\n");
         (void) interrupt->SetLevel(oldLevel); //restore interrupts
         return;
     }
@@ -203,7 +203,7 @@ void Condition::Wait(Lock* conditionLock)
     }
     if(waitingLock != conditionLock)
     {
-        printf("Condition::Wait::(waitingLock != conditionLock)::waitingLock and the lock passed in don't match\n");
+        //printf("Condition::Wait::(waitingLock != conditionLock)::waitingLock and the lock passed in don't match\n");
         (void) interrupt->SetLevel(oldLevel); //restore interrupts
         return;
     }
@@ -226,7 +226,7 @@ void Condition::Signal(Lock* conditionLock)
 
     if(waitingLock != conditionLock)
     {
-        printf("Condition::Signal::(waitingLock != lock)::Incorrect lock passed in\n");
+        //printf("Condition::Signal::(waitingLock != lock)::Incorrect lock passed in\n");
         (void) interrupt->SetLevel(oldLevel); //restore interrupts
         return;
     }
@@ -248,14 +248,14 @@ void Condition::Broadcast(Lock* conditionLock)
     IntStatus oldLevel = interrupt->SetLevel(IntOff); //disable interrupts
     if(conditionLock == NULL)
     {
-        printf("Condition::Broadcast::(conditionLock == NULL)::No lock passed in.  Reenable interrupts and return.\n");
+        //printf("Condition::Broadcast::(conditionLock == NULL)::No lock passed in.  Reenable interrupts and return.\n");
         (void) interrupt->SetLevel(oldLevel); //restore interrupts
         return;
     }
 
     if(conditionLock != waitingLock)
     {
-        printf("Condition::Broadcast::(conditionLock != waitingLock)::Waiting lock is not the same as the condition lock.\n");
+        //printf("Condition::Broadcast::(conditionLock != waitingLock)::Waiting lock is not the same as the condition lock.\n");
         (void) interrupt->SetLevel(oldLevel); //restore interrupts
         return;
     }

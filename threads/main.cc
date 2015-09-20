@@ -83,27 +83,15 @@ main(int argc, char **argv)
 
     DEBUG('t', "Entering main");
     (void) Initialize(argc, argv);
-
+    
 #ifdef THREADS
-	extern void Part2(void), TestSuite(void);
+    ThreadTest();
 #endif
-
-
-// #ifdef THREADS
-//     ThreadTest();
-// #endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
 	argCount = 1;
         if (!strcmp(*argv, "-z"))               // print copyright
             printf (copyright);
-#ifdef THREADS
-if (!strcmp(*argv, "-T"))               // Test Suite
-    TestSuite();
-if (!strcmp(*argv, "-P2"))               // Problem 2
-    Part2();
-#endif //THREADS
-
 #ifdef USER_PROGRAM
         if (!strcmp(*argv, "-x")) {        	// run a user program
 	    ASSERT(argc > 1);
