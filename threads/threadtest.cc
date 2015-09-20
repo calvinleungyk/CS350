@@ -512,6 +512,11 @@ void clerkFactory() {
         //clerkArray[i] = tempClerkCount;
         clerkArray[i] = array[i];
     }
+    cout << "Number of ApplicationClerks = " <<  clerkArray[0] << endl;
+    cout << "Number of PictureClerks = " << clerkArray[1] << endl;
+    cout << "Number of PassportClerks = " << clerkArray[2] << endl;
+    cout << "Number of CashiersClerks = " << clerkArray[3] << endl;
+    cout << "Number of Senators = " << senatorCount << endl;
 }
 
 
@@ -616,6 +621,7 @@ void createCustomerThreads(Thread *t) {
         t = new Thread(cStringDeepCopy(sstm.str()));
         t->Fork((VoidFunctionPtr)Customer,i);
     }    
+    cout << "Number of Customers = " << customerCount << endl;
 }
 
 void createSenatorThreads(Thread *t){
@@ -671,6 +677,7 @@ int chooseCustomerFromLine(int myLine) {
                 breakLock[myLine]->Acquire();
                 clerkLock[myLine]->Acquire(); //TODO: will this prevent race condition?
                 cout << currentThread->getName() << ": I'm going on break" <<clerkBribeLineCount[myLine] +clerkLineCount[myLine]<< endl;
+                cout << currentThread->getName() << " is going on break" << endl;
                 clerkStates[myLine] = ONBREAK;
                 clerkLineLock->Release();
                 breakCV[myLine]->Wait(breakLock[myLine]);
@@ -688,6 +695,7 @@ int chooseCustomerFromLine(int myLine) {
     //Do my job -> customer waiting
     return customerData[myLine]; //HUNG: Customer would have set the customerData[myLine] to be their custNumber
 }
+
 void clerkSignalsNextCustomer(int myLine) {
     clerkCV[myLine]->Signal(clerkLock[myLine]);
     clerkCV[myLine]->Wait(clerkLock[myLine]);
@@ -698,13 +706,15 @@ void ApplicationClerk(int myLine) {
     while(true) {
         int custNumber = chooseCustomerFromLine(myLine);
         clerkStates[myLine] = BUSY;
-        cout << currentThread->getName() << "::starting to process application for Customer_" << custNumber << endl;
+        cout << currentThread->getName() << " has signalled a Customer to come to their counter. " << "(Customer " << custNumber << ")" << endl;
+        cout << currentThread->getName() << " has received SSN " << custNumber << "from Customer " << custNumber << endl;
         int numYields = rand() % 80 + 20;
         for(int i = 0; i < numYields; ++i) {
             currentThread->Yield();
         }
 
         customerAttributes[custNumber].applicationIsFiled = true;
+        cout << currentThread->getName() << " has recorded a completed application for Customer " << custNumber << endl;
         clerkSignalsNextCustomer(myLine);
     }
 }
@@ -713,16 +723,26 @@ void PictureClerk(int myLine) {
     while(true) {
         int custNumber = chooseCustomerFromLine(myLine);
         clerkStates[myLine] = BUSY;
-        cout << currentThread->getName() << "::starting to process picture for Customer_" << custNumber << endl;
+        cout << currentThread->getName() << " has signalled a Customer to come to their counter. " << "(Customer " << custNumber << ")" << endl;
+        cout << currentThread->getName() << " has received SSN " << custNumber << "from Customer " << custNumber << endl;
+        cout << currentThread->getName() << " has received SSN " << custNumber << "from Customer " << custNumber << endl;
+        
         int numYields = rand() % 80 + 20;
 
         while(!customerAttributes[custNumber].likesPicture) {
-            for(int i = 0; i < numYields; ++i) {
-                currentThread->Yield();
-            }
+        	cout << currentThread->getName() << " has taken a picture of Customer " << custNumber << endl;
+            
             int probability = rand() % 100;
             if(probability >= 25) {
                 customerAttributes[custNumber].likesPicture = true;
+                cout << "Customer " << custNumber << " does like their picture from " << currentThread->getName() << endl;
+                cout << currentThread->getName() << " has been told that Customer " << custNumber << " does like their picture" << endl;
+                for(int i = 0; i < numYields; ++i) {
+	                currentThread->Yield();
+	            }
+            }else{
+            	cout << "Customer " << custNumber << " does not like their picture from " << currentThread->getName() << endl;
+            	cout << currentThread->getName() << " has been told that Customer " << custNumber << " does not like their picture" << endl;
             }
         }
         clerkSignalsNextCustomer(myLine);
@@ -732,13 +752,14 @@ void PictureClerk(int myLine) {
 void PassportClerk(int myLine) {
     while(true) {
         int custNumber = chooseCustomerFromLine(myLine);
+        cout << currentThread->getName() << " has signalled a Customer to come to their counter. " << "(Customer " << custNumber << ")" << endl;
+        cout << currentThread->getName() << " has received SSN " << custNumber << "from Customer " << custNumber << endl;
         if(customerAttributes[custNumber].likesPicture && customerAttributes[custNumber].applicationIsFiled) {
+        	cout << currentThread->getName() << " has determined that Customer " << custNumber << " has both their application and picture completed" << endl;
             clerkStates[myLine] = BUSY;
-            cout << currentThread->getName() << "::starting to process passport for Customer_" << custNumber << endl;
+
             int numYields = rand() % 80 + 20;
-            for(int i = 0; i < numYields; ++i) {
-                currentThread->Yield();
-            }
+            
             // clerkStates[myLine] = AVAILABLE;
             
             int clerkMessedUp = rand() % 100;
@@ -746,13 +767,17 @@ void PassportClerk(int myLine) {
                 cout << currentThread->getName() << ": Messed up for Customer_" << custNumber<< ". Sending customer to back of line."<<endl;
                 customerAttributes[custNumber].clerkMessedUp = true; //TODO: customer uses this to know which back line to go to
             } else {
-                cout << currentThread->getName() << ": Customer_" << custNumber << " was given hasCertification ##############################################################" << endl;
+                cout << currentThread->getName() << " has recorded Customer " << custNumber << " passport documentation" << endl;
+                for(int i = 0; i < numYields; ++i) {
+	                currentThread->Yield();
+	            }	
                 customerAttributes[custNumber].clerkMessedUp = false;
                 customerAttributes[custNumber].hasCertification = true;
-            }
-
-            
-        } 
+            } 
+        } else {
+        	cout << currentThread->getName() << " has determined that Customer " << custNumber << " does not have both their application and picture completed" << endl;
+        }
+        
         // else { //customer gets sent to back of line
         //     cout << "SENT TO BACK OF LINE &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << endl;
         //     int waitTime = rand() % 900 + 100;
@@ -767,9 +792,15 @@ void PassportClerk(int myLine) {
 void Cashier(int myLine) {
     while(true) {
         int custNumber = chooseCustomerFromLine(myLine);
+        cout << currentThread->getName() << " has signalled a Customer to come to their counter - Customer " << custNumber << endl;
+        cout << currentThread->getName() << " has received SSN " << custNumber << "from Customer " << custNumber << endl;
+        
         cout << "Customer_" << custNumber << ": after ##############################################################" << endl;
         if(customerAttributes[custNumber].hasCertification) {
+        	cout << currentThread->getName() << " has verified that Customer " << custNumber << "has been certified by a PassportClerk" << endl;
             customerAttributes[custNumber].money -= 100;
+            cout << currentThread->getName() << " has received the $100 from Customer " << custNumber << "after certification " << endl;
+            cout << "Customer " << custNumber << " has given " << currentThread->getName() << " $100 " << endl;
             clerkMoney[myLine] += 100;
             clerkStates[myLine] = BUSY;
             cout << currentThread->getName() << "::starting to process money for Customer_" << custNumber << endl;
@@ -782,13 +813,12 @@ void Cashier(int myLine) {
                 cout << currentThread->getName() << ": Messed up for Customer_" << custNumber<< ". Sending customer to back of line."<<endl;
                 customerAttributes[custNumber].clerkMessedUp = true; //TODO: customer uses this to know which back line to go to
             } else {
-                cout << currentThread->getName() << ": Customer_" << custNumber << " was given isDone ##############################################################" << endl;
+                cout << currentThread->getName() << " has provided Customer " << custNumber << "their completed passport" << endl;
+                cout << currentThread->getName() << " has recorded that Customer " << custNumber << " has been given their completed passport" << endl;
                 customerAttributes[custNumber].clerkMessedUp = false;
                 customerAttributes[custNumber].isDone = true;
                 // clerkStates[myLine] = AVAILABLE;
                 // cout << "Customer_" << custNumber << ": I'm DONE ##############################################################" << endl;
-            
-
             }
 
         } 
@@ -819,6 +849,7 @@ void Customer(int custNumber) {
                 !customerAttributes[custNumber].hasCertification && 
                 !customerAttributes[custNumber].isDone && 
                 clerkTypes[i] == "ApplicationClerk") {
+            	cout << "Customer " << custNumber << "has gotten in regular line for " << clerkTypes[i] << endl;
                 cout << "    " << currentThread->getName() << "::: ApplicationClerk chosen" << endl;
                 if(clerkLineCount[i] < lineSize ) { //&& clerkStates[i] != ONBREAK 
                     myLine = i;
@@ -829,6 +860,7 @@ void Customer(int custNumber) {
                       !customerAttributes[custNumber].hasCertification && 
                       !customerAttributes[custNumber].isDone && 
                       clerkTypes[i] == "PictureClerk") {
+            	cout << "Customer " << custNumber << "has gotten in regular line for " << clerkTypes[i] << endl;
                 cout << "    " << currentThread->getName() << "::: PictureClerk chosen" << endl;
                 if(clerkLineCount[i] < lineSize) {//&& clerkStates[i] != ONBREAK 
                     myLine = i;
@@ -839,6 +871,7 @@ void Customer(int custNumber) {
                       !customerAttributes[custNumber].hasCertification && 
                       !customerAttributes[custNumber].isDone &&  
                       clerkTypes[i] == "PassportClerk") {
+            	cout << "Customer " << custNumber << "has gotten in regular line for " << clerkTypes[i] << endl;
                 cout << "    " << currentThread->getName() << "::: PassportClerk chosen" << endl;
                 if(clerkLineCount[i] < lineSize) {// && clerkStates[i] != ONBREAK 
                     myLine = i;
@@ -849,6 +882,7 @@ void Customer(int custNumber) {
                       customerAttributes[custNumber].hasCertification && 
                       !customerAttributes[custNumber].isDone &&  
                       clerkTypes[i] == "Cashier") {
+            	cout << "Customer " << custNumber << "has gotten in regular line for " << clerkTypes[i] << endl;
                 cout << "    " << currentThread->getName() << "::: Cashier chosen" << endl;
                 if(clerkLineCount[i] < lineSize) {  //&& clerkStates[i] != ONBREAK 
                     myLine = i;
@@ -867,53 +901,59 @@ void Customer(int custNumber) {
         //     outsideLineCount++;
         //     outsideLineCV->Wait(clerkLineLock);
         // } else {
-            if(clerkStates[myLine] != AVAILABLE ) {//clerkStates[myLine] == BUSY
-                //I must wait in line
-                cout << currentThread->getName() << ": I'm waiting for the clerk " << clerkTypes[myLine] << endl;
-                //HUNG: adding code for line bribing TODO: check if all transactions are complete
-                if(customerAttributes[custNumber].money > 100){
-                    cout << currentThread->getName() << ": Has money to bribe with" << endl;
-                    customerAttributes[custNumber].money -= 500;
-                    clerkMoney[myLine] += 500;
-                    clerkBribeLineCount[myLine]++;
-                    bribe = true;
-                    clerkBribeLineCV[myLine]->Wait(clerkLineLock);
-                } else {
-                    cout << currentThread->getName() << ": I'm poor" << endl;
-                    clerkLineCount[myLine]++;
-                    clerkLineCV[myLine]->Wait(clerkLineLock);
-                }
-                if(bribe) {
-                    cout << currentThread->getName() << ": I'm bribing" << endl;
-                    clerkBribeLineCount[myLine]--;
-                } else {
-                    cout << currentThread->getName() << ": I'm not bribing" << endl;
-                    clerkLineCount[myLine]--;
-                }
+        if(clerkStates[myLine] != AVAILABLE ) {//clerkStates[myLine] == BUSY
+            //I must wait in line
+            cout << currentThread->getName() << ": I'm waiting for the clerk " << clerkTypes[myLine] << endl;
+            //HUNG: adding code for line bribing TODO: check if all transactions are complete
+            if(customerAttributes[custNumber].money > 100){
+                cout << currentThread->getName() << ": Has money to bribe with" << endl;
+                cout << currentThread->getName() << " has gotten in bribe line for " << clerkTypes[myLine] << " " << myLine << endl;
+
+                customerAttributes[custNumber].money -= 500;
+                clerkMoney[myLine] += 500;
+                clerkBribeLineCount[myLine]++;
+                bribe = true;
+                clerkBribeLineCV[myLine]->Wait(clerkLineLock);
             } else {
-                clerkStates[myLine] = BUSY;
+                cout << currentThread->getName() << ": I'm poor" << endl;
+                clerkLineCount[myLine]++;
+                clerkLineCV[myLine]->Wait(clerkLineLock);
             }
-            clerkLineLock->Release();
-
-            clerkLock[myLine]->Acquire();
-            //Give my data to my clerk
-            customerData[myLine] = custNumber;
-            clerkCV[myLine]->Signal(clerkLock[myLine]);
-            //wait for clerk to do their job
-            clerkCV[myLine]->Wait(clerkLock[myLine]);
-           //Read my data
-            clerkCV[myLine]->Signal(clerkLock[myLine]);
-            clerkLock[myLine]->Release();
-
-            if(customerAttributes[custNumber].clerkMessedUp) {
-                int yieldTime = rand() % 900 + 100;
-                for(int i = 0; i < yieldTime; ++i) {
-                    currentThread->Yield();
-                }
-                customerAttributes[custNumber].clerkMessedUp = false;
+            if(bribe) {
+                cout << currentThread->getName() << ": I'm bribing" << endl;
+                clerkBribeLineCount[myLine]--;
+            } else {
+                cout << currentThread->getName() << ": I'm not bribing" << endl;
+                clerkLineCount[myLine]--;
             }
+        } else {
+            clerkStates[myLine] = BUSY;
+        }
+        clerkLineLock->Release();
+
+        clerkLock[myLine]->Acquire();
+        //Give my data to my clerk
+        customerData[myLine] = custNumber;
+        cout << "Customer " << custNumber << " has given SSN "<< custNumber << " to " << clerkTypes[myLine] << " " << myLine << endl;
+
+        clerkCV[myLine]->Signal(clerkLock[myLine]);
+        //wait for clerk to do their job
+        clerkCV[myLine]->Wait(clerkLock[myLine]);
+       //Read my data
+        clerkCV[myLine]->Signal(clerkLock[myLine]);
+        clerkLock[myLine]->Release();
+        //TODO : Customer [identifier] is going outside the Passport Office because their is a Senator present.
+        if(customerAttributes[custNumber].clerkMessedUp) {
+        	cout << "Clerk messed up.  Customer is going to the back of the line." << endl;
+            int yieldTime = rand() % 900 + 100;
+            for(int i = 0; i < yieldTime; ++i) {
+                currentThread->Yield();
+            }
+            customerAttributes[custNumber].clerkMessedUp = false;
+        }
         // }
     }
+    cout << currentThread->getName() << " is leaving the Passport Office." << endl;
 }
 
 void Senator(int custNumber){
@@ -968,7 +1008,9 @@ void Senator(int custNumber){
         }
         //Give my data to my clerk
         customerData[myLine] = custNumber;
+        cout << "Customer " << custNumber << " has given SSN " << custNumber << " to " << clerkTypes[myLine] << " " << myLine << endl;
         clerkCV[myLine]->Signal(clerkLock[myLine]);
+
         //wait for clerk to do their job
         clerkCV[myLine]->Wait(clerkLock[myLine]);
        //Read my data
@@ -1002,18 +1044,41 @@ void wakeUpClerks() {
             breakLock[i]->Acquire();
             breakCV[i]->Signal(breakLock[i]);
             breakLock[i]->Release();
+            cout << "Manager has woken up an " << clerkTypes[i] << endl;
+            cout << clerkTypes[i] << " " << i << " is coming off break" << endl;
         }
     }
 }
 
 void printMoney() {
     int totalMoney = 0;
+    int applicationMoney = 0;
+    int pictureMoney = 0;
+    int passportMoney = 0;
+    int cashierMoney = 0;
+
     for(int i = 0; i < clerkCount; ++i) {
+    	if (i < clerkArray[0]){
+    		applicationMoney += clerkMoney[i];
+    	}
+    	if (i < clerkArray[0] + clerkArray[1] && i >= clerkArray[0]){
+    		pictureMoney += clerkMoney[i];
+    	}
+    	if (i < clerkArray[0] + clerkArray[1] + clerkArray[2] && i >= clerkArray[0] + clerkArray[1]){
+    		passportMoney += clerkMoney[i];
+    	}
+    	if (i < clerkArray[0] + clerkArray[1] + clerkArray[2] + clerkArray[3] && i >= clerkArray[0] + clerkArray[1] + clerkArray[2] ){
+    		cashierMoney += clerkMoney[i];
+    	}
         totalMoney += clerkMoney[i];
         cout << "Money earned by clerk" << i << ": " << clerkMoney[i] << endl;
     }
 
-    cout << "Total money earned: " << totalMoney << endl << endl;
+    cout << "Manager has counted a total of " << applicationMoney << " for ApplicationClerks" << endl;
+    cout << "Manager has counted a total of " << pictureMoney << " for PictureClerks" << endl;
+    cout << "Manager has counted a total of " << passportMoney << " for PassportClerks" << endl;
+    cout << "Manager has counted a total of " << cashierMoney << " for Cashiers" << endl;
+    cout << "Manager has counted a total of " << totalMoney << " for the passport office" << endl;
 }
 
 void Manager() {

@@ -77,11 +77,12 @@ class Lock {
                     // Condition variable ops below.
     Thread* getLockOwner() {return lockOwner;}
     void Print();
+    enum LockStatus {FREE, BUSY};
+    LockStatus lockStatus;
   private:
     char* name;                // for debugging
     // plus some other stuff you'll need to define
-    enum LockStatus {FREE, BUSY};
-    LockStatus lockStatus;
+    
     Thread* lockOwner;
     List* waitQueue;
 };
