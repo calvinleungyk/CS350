@@ -291,29 +291,7 @@ scheduler.o: ../threads/scheduler.cc ../threads/copyright.h \
   ../filesys/openfile.h ../threads/system.h ../machine/interrupt.h \
   ../threads/list.h ../machine/stats.h ../machine/timer.h \
   ../filesys/filesys.h
-synch.o: ../threads/synch.cc ../threads/copyright.h ../threads/synch.h \
-  ../threads/thread.h ../threads/utility.h ../threads/bool.h \
-  ../machine/sysdep.h ../threads/copyright.h \
-  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/stdio.h \
-  /usr/include/stdarg.h /usr/include/iso/stdarg_iso.h \
-  /usr/include/sys/va_impl.h /usr/include/sys/va_list.h \
-  /usr/include/sys/isa_defs.h /usr/include/iso/stdarg_c99.h \
-  /usr/include/sys/feature_tests.h /usr/include/sys/ccompile.h \
-  /usr/include/iso/stdio_iso.h /usr/include/stdio_tag.h \
-  /usr/include/stdio_impl.h /usr/include/iso/stdio_c99.h \
-  /usr/include/string.h /usr/include/iso/string_iso.h \
-  /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h \
-  /usr/include/iso/stdlib_c99.h /usr/include/sys/wait.h \
-  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/sys/types.h \
-  /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
-  /usr/include/sys/select.h /usr/include/sys/time_impl.h \
-  /usr/include/sys/time.h /usr/include/time.h /usr/include/iso/time_iso.h \
-  /usr/include/sys/resource.h /usr/include/sys/siginfo.h \
-  /usr/include/sys/machsig.h /usr/include/sys/procset.h \
-  /usr/include/sys/signal.h /usr/include/sys/iso/signal_iso.h \
-  /usr/include/sys/unistd.h /usr/include/sys/ucontext.h \
-  /usr/include/sys/regset.h /usr/include/v7/sys/privregs.h \
-  /usr/include/v7/sys/psr.h /usr/include/sys/fsr.h ../machine/machine.h \
+synch.o: ../threads/synch.cc \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/iostream \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/c++config.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/os_defines.h \
@@ -323,16 +301,29 @@ synch.o: ../threads/synch.cc ../threads/copyright.h ../threads/synch.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/c++locale.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/clocale \
   /usr/include/locale.h /usr/include/iso/locale_iso.h \
-  /usr/include/libintl.h \
+  /usr/include/sys/feature_tests.h /usr/include/sys/ccompile.h \
+  /usr/include/sys/isa_defs.h /usr/include/libintl.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstring \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstddef \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/stddef.h \
-  /usr/include/iso/stddef_iso.h \
+  /usr/include/iso/stddef_iso.h /usr/include/string.h \
+  /usr/include/iso/string_iso.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstdio \
+  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/stdio.h \
+  /usr/include/stdarg.h /usr/include/iso/stdarg_iso.h \
+  /usr/include/sys/va_impl.h /usr/include/sys/va_list.h \
+  /usr/include/iso/stdarg_c99.h /usr/include/iso/stdio_iso.h \
+  /usr/include/stdio_tag.h /usr/include/stdio_impl.h \
+  /usr/include/iso/stdio_c99.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/c++io.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/gthr.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/gthr-default.h \
-  /usr/include/pthread.h /usr/include/sched.h /usr/include/unistd.h \
+  /usr/include/pthread.h \
+  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/sys/types.h \
+  /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+  /usr/include/sys/select.h /usr/include/sys/time_impl.h \
+  /usr/include/sys/time.h /usr/include/time.h /usr/include/iso/time_iso.h \
+  /usr/include/sched.h /usr/include/unistd.h /usr/include/sys/unistd.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cctype \
   /usr/include/ctype.h /usr/include/iso/ctype_iso.h \
   /usr/include/iso/ctype_c99.h \
@@ -352,6 +343,14 @@ synch.o: ../threads/synch.cc ../threads/copyright.h ../threads/synch.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/climits \
   /usr/include/limits.h /usr/include/iso/limits_iso.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstdlib \
+  /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h \
+  /usr/include/iso/stdlib_c99.h /usr/include/sys/wait.h \
+  /usr/include/sys/resource.h /usr/include/sys/siginfo.h \
+  /usr/include/sys/machsig.h /usr/include/sys/procset.h \
+  /usr/include/sys/signal.h /usr/include/sys/iso/signal_iso.h \
+  /usr/include/sys/ucontext.h /usr/include/sys/regset.h \
+  /usr/include/v7/sys/privregs.h /usr/include/v7/sys/psr.h \
+  /usr/include/sys/fsr.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/new \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/bits/stl_pair.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/bits/type_traits.h \
@@ -404,13 +403,16 @@ synch.o: ../threads/synch.cc ../threads/copyright.h ../threads/synch.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/typeinfo \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/istream \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/bits/istream.tcc \
-  ../threads/utility.h ../machine/translate.h ../machine/disk.h \
-  ../userprog/addrspace.h ../threads/copyright.h ../filesys/filesys.h \
-  ../threads/copyright.h ../filesys/openfile.h ../threads/utility.h \
-  ../userprog/table.h ../userprog/bitmap.h ../threads/utility.h \
-  ../filesys/openfile.h ../threads/list.h ../threads/system.h \
-  ../threads/scheduler.h ../machine/interrupt.h ../threads/list.h \
-  ../machine/stats.h ../machine/timer.h ../filesys/filesys.h
+  ../threads/copyright.h ../threads/synch.h ../threads/thread.h \
+  ../threads/utility.h ../threads/bool.h ../machine/sysdep.h \
+  ../threads/copyright.h ../machine/machine.h ../threads/utility.h \
+  ../machine/translate.h ../machine/disk.h ../userprog/addrspace.h \
+  ../threads/copyright.h ../filesys/filesys.h ../threads/copyright.h \
+  ../filesys/openfile.h ../threads/utility.h ../userprog/table.h \
+  ../userprog/bitmap.h ../threads/utility.h ../filesys/openfile.h \
+  ../threads/list.h ../threads/system.h ../threads/scheduler.h \
+  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
+  ../machine/timer.h ../filesys/filesys.h
 synchlist.o: ../threads/synchlist.cc ../threads/copyright.h \
   ../threads/synchlist.h ../threads/list.h ../threads/utility.h \
   ../threads/bool.h ../machine/sysdep.h ../threads/copyright.h \
@@ -795,30 +797,7 @@ utility.o: ../threads/utility.cc ../threads/copyright.h \
   /usr/include/sys/unistd.h /usr/include/sys/ucontext.h \
   /usr/include/sys/regset.h /usr/include/v7/sys/privregs.h \
   /usr/include/v7/sys/psr.h /usr/include/sys/fsr.h
-threadtest.o: ../threads/threadtest.cc ../threads/copyright.h \
-  ../threads/system.h ../threads/utility.h ../threads/bool.h \
-  ../machine/sysdep.h ../threads/copyright.h \
-  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/stdio.h \
-  /usr/include/stdarg.h /usr/include/iso/stdarg_iso.h \
-  /usr/include/sys/va_impl.h /usr/include/sys/va_list.h \
-  /usr/include/sys/isa_defs.h /usr/include/iso/stdarg_c99.h \
-  /usr/include/sys/feature_tests.h /usr/include/sys/ccompile.h \
-  /usr/include/iso/stdio_iso.h /usr/include/stdio_tag.h \
-  /usr/include/stdio_impl.h /usr/include/iso/stdio_c99.h \
-  /usr/include/string.h /usr/include/iso/string_iso.h \
-  /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h \
-  /usr/include/iso/stdlib_c99.h /usr/include/sys/wait.h \
-  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/sys/types.h \
-  /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
-  /usr/include/sys/select.h /usr/include/sys/time_impl.h \
-  /usr/include/sys/time.h /usr/include/time.h /usr/include/iso/time_iso.h \
-  /usr/include/sys/resource.h /usr/include/sys/siginfo.h \
-  /usr/include/sys/machsig.h /usr/include/sys/procset.h \
-  /usr/include/sys/signal.h /usr/include/sys/iso/signal_iso.h \
-  /usr/include/sys/unistd.h /usr/include/sys/ucontext.h \
-  /usr/include/sys/regset.h /usr/include/v7/sys/privregs.h \
-  /usr/include/v7/sys/psr.h /usr/include/sys/fsr.h ../threads/thread.h \
-  ../machine/machine.h \
+threadtest.o: ../threads/threadtest.cc \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/iostream \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/c++config.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/os_defines.h \
@@ -828,16 +807,29 @@ threadtest.o: ../threads/threadtest.cc ../threads/copyright.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/c++locale.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/clocale \
   /usr/include/locale.h /usr/include/iso/locale_iso.h \
-  /usr/include/libintl.h \
+  /usr/include/sys/feature_tests.h /usr/include/sys/ccompile.h \
+  /usr/include/sys/isa_defs.h /usr/include/libintl.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstring \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstddef \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/stddef.h \
-  /usr/include/iso/stddef_iso.h \
+  /usr/include/iso/stddef_iso.h /usr/include/string.h \
+  /usr/include/iso/string_iso.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstdio \
+  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/stdio.h \
+  /usr/include/stdarg.h /usr/include/iso/stdarg_iso.h \
+  /usr/include/sys/va_impl.h /usr/include/sys/va_list.h \
+  /usr/include/iso/stdarg_c99.h /usr/include/iso/stdio_iso.h \
+  /usr/include/stdio_tag.h /usr/include/stdio_impl.h \
+  /usr/include/iso/stdio_c99.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/c++io.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/gthr.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sparc-sun-solaris2.10/bits/gthr-default.h \
-  /usr/include/pthread.h /usr/include/sched.h /usr/include/unistd.h \
+  /usr/include/pthread.h \
+  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/sys/types.h \
+  /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+  /usr/include/sys/select.h /usr/include/sys/time_impl.h \
+  /usr/include/sys/time.h /usr/include/time.h /usr/include/iso/time_iso.h \
+  /usr/include/sched.h /usr/include/unistd.h /usr/include/sys/unistd.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cctype \
   /usr/include/ctype.h /usr/include/iso/ctype_iso.h \
   /usr/include/iso/ctype_c99.h \
@@ -857,6 +849,14 @@ threadtest.o: ../threads/threadtest.cc ../threads/copyright.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/climits \
   /usr/include/limits.h /usr/include/iso/limits_iso.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/cstdlib \
+  /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h \
+  /usr/include/iso/stdlib_c99.h /usr/include/sys/wait.h \
+  /usr/include/sys/resource.h /usr/include/sys/siginfo.h \
+  /usr/include/sys/machsig.h /usr/include/sys/procset.h \
+  /usr/include/sys/signal.h /usr/include/sys/iso/signal_iso.h \
+  /usr/include/sys/ucontext.h /usr/include/sys/regset.h \
+  /usr/include/v7/sys/privregs.h /usr/include/v7/sys/psr.h \
+  /usr/include/sys/fsr.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/new \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/bits/stl_pair.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/bits/type_traits.h \
@@ -909,13 +909,18 @@ threadtest.o: ../threads/threadtest.cc ../threads/copyright.h \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/typeinfo \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/istream \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/bits/istream.tcc \
-  ../threads/utility.h ../machine/translate.h ../machine/disk.h \
-  ../userprog/addrspace.h ../threads/copyright.h ../filesys/filesys.h \
-  ../threads/copyright.h ../filesys/openfile.h ../threads/utility.h \
-  ../userprog/table.h ../userprog/bitmap.h ../threads/utility.h \
-  ../filesys/openfile.h ../threads/scheduler.h ../threads/list.h \
-  ../machine/interrupt.h ../threads/list.h ../machine/stats.h \
-  ../machine/timer.h ../filesys/filesys.h
+  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/sstream \
+  /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/../../../../include/c++/3.4.3/bits/sstream.tcc \
+  ../threads/copyright.h ../threads/system.h ../threads/utility.h \
+  ../threads/bool.h ../machine/sysdep.h ../threads/copyright.h \
+  ../threads/thread.h ../machine/machine.h ../threads/utility.h \
+  ../machine/translate.h ../machine/disk.h ../userprog/addrspace.h \
+  ../threads/copyright.h ../filesys/filesys.h ../threads/copyright.h \
+  ../filesys/openfile.h ../threads/utility.h ../userprog/table.h \
+  ../userprog/bitmap.h ../threads/utility.h ../filesys/openfile.h \
+  ../threads/scheduler.h ../threads/list.h ../machine/interrupt.h \
+  ../threads/list.h ../machine/stats.h ../machine/timer.h \
+  ../filesys/filesys.h ../threads/synch.h
 interrupt.o: ../machine/interrupt.cc \
   /usr/sfw/lib/gcc/sparc-sun-solaris2.10/3.4.3/include/stdio.h \
   /usr/include/stdarg.h /usr/include/iso/stdarg_iso.h \
