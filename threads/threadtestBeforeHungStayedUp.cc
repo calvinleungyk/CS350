@@ -377,7 +377,7 @@ void TestSuite() {
 
     // Wait for Test 1 to complete
     for (  i = 0; i < 2; i++ )
-        t1_done.P();
+    t1_done.P();
 
     // Test 2
 
@@ -408,15 +408,18 @@ void TestSuite() {
 
     // Wait for Test 3 to complete
     for (  i = 0; i < 2; i++ ) {
+        printf("***************BEFORE****************\n");
         if(t3_l1.getLockOwner() != NULL) {
             printf("This is the current lockOwner: %s\n", t3_l1.getLockOwner()->getName());
-        } else {
-            printf("The lock is NULL\n");
-        }
+        } else {printf("The lock is NULL\n");}
 
         t3_done.P();
         scheduler->Print();
+        printf("^^^^^^^^^^^^^^");
         t3_l1.Print();
+
+
+        printf("***************AFTER*****************\n");
     }
 
     // Test 4
@@ -458,13 +461,12 @@ void TestSuite() {
 
 //HUNG: Some constants, since we are writing our own test cases,
 //the number of clerks and customers is totally up to us
-int currentTest = 1;
 const int CLERK_NUMBER = 20;
 const int CUSTOMER_NUMBER = 60;
 const int CLERK_TYPES = 4;
-const int clerkCount = 5; //TODO make this NOT const and change to user input with cin >>
-const int customerCount = 25; //TODO make this NOT const and change to user input with cin >>
-int senatorCount = 0; //TODO make this NOT const and change to user input with cin >>
+const int clerkCount = 5; //TODO make thhis NOT const and chhange to user input with cin >>
+const int customerCount = 25; //TODO make thhis NOT const and chhange to user input with cin >>
+int senatorCount = 1; //TODO make this NOT const and chhange to user input with cin >>
 int senatorLineCount = 0;
 
 Lock* clerkLineLock = new Lock("ClerkLineLock");
@@ -488,14 +490,14 @@ int outsideLineCount = 0;
 CustomerAttribute customerAttributes[CUSTOMER_NUMBER];
 int clerkMoney[CLERK_NUMBER] = {0};
 //Senator control variables
-Condition* senatorLineCV = new Condition("SenatorLineCV");
+Condition* senatorLineCV = new Condition("SenatorLineCV"); 
 Condition* clerkSenatorCV[CLERK_NUMBER];
 //Second monitor
 Lock* clerkLock[CLERK_NUMBER];
 Condition* clerkCV[CLERK_NUMBER];
 int customerData[CLERK_NUMBER]; //HUNG: Every clerk will use this to get the customer's customerAttribute index
 string clerkTypesStatic[CLERK_TYPES] = { "ApplicationClerks : ", "PictureClerks     : ", "PassportClerks    : ", "Cashiers          : " };
-string clerkTypes[CLERK_NUMBER];
+string clerkTypes[CLERK_NUMBER]; 
 int clerkArray[CLERK_TYPES];
 
 Lock* breakLock[CLERK_NUMBER];
@@ -508,13 +510,14 @@ char* cStringDeepCopy(string str) {
     return cstr;
 }
 
-void clerkFactory(int countOfEachClerkType[]) {
+void clerkFactory() {
     int tempClerkCount = 0;
+    int array[4] = {1,1,1,2};
     for(int i = 0; i < CLERK_TYPES; ++i) {
-        cout << clerkTypesStatic[i] << countOfEachClerkType[i] << endl;
+        cout << clerkTypesStatic[i] << array[i] << endl;
         //cin >> tempClerkCount;
         //clerkArray[i] = tempClerkCount;
-        clerkArray[i] = countOfEachClerkType[i];
+        clerkArray[i] = array[i];
     }
 }
 
@@ -580,33 +583,33 @@ void createClerkLocksAndConditions() {
         char* name = cStringDeepCopy(sstm.str());
         clerkLock[i] = new Lock(name);
         // delete [] name;
-
+        
         sstm.str(string());
         sstm << "ClerkCV_" << i;
         name = cStringDeepCopy(sstm.str());
         clerkCV[i] = new Condition(name);
         // delete [] name;
-
+        
         sstm.str(string());
         sstm << "ClerkLineCV_" << i;
         name = cStringDeepCopy(sstm.str());
         clerkLineCV[i] = new Condition(name);
         // delete [] name;
-
+        
         sstm.str(string());
         sstm << "ClerkBribeLineCV_" << i;
         name = cStringDeepCopy(sstm.str());
         clerkBribeLineCV[i] = new Condition(name);
         // delete [] name;
-
+        
         sstm.str(string());
         sstm << "BreakLock_" << i;
         name = cStringDeepCopy(sstm.str());
         breakLock[i] = new Lock(name);
         // delete [] name;
-
+        
         sstm.str(string());
-        sstm << "BreakCV_" << i;
+        sstm << "breakCV_" << i;
         name = cStringDeepCopy(sstm.str());
         breakCV[i] = new Condition(name);
         // delete [] name;
@@ -631,7 +634,7 @@ void createCustomerThreads(Thread *t) {
         sstm << "Customer_" << i;
         t = new Thread(cStringDeepCopy(sstm.str()));
         t->Fork((VoidFunctionPtr)Customer,i);
-    }
+    }    
 }
 
 void createSenatorThreads(Thread *t){
@@ -643,80 +646,22 @@ void createSenatorThreads(Thread *t){
     }
 }
 
-void createTestVariables(Thread* t, int countOfEachClerkType[]) {
-    createClerkLocksAndConditions();
-    clerkFactory(countOfEachClerkType);
-    createClerkThreads(t);
-    createCustomerThreads(t);
-    createSenatorThreads(t);
-    t->Fork((VoidFunctionPtr)Manager,0);
-}
-
 void Part2() {
     Thread *t;
     char *name;
 
     printf("Starting Part 2\n");
 
-    
-    // TODO: start Manager thread
+    createClerkLocksAndConditions();
+    clerkFactory();
+    createClerkThreads(t);
+    createCustomerThreads(t);
+    createSenatorThreads(t);
+    t->Fork((VoidFunctionPtr)Manager,0); // TODO: start Manager thread
     //t->Fork((VoidFunctionPtr)Senator,i); // TODO: start Senator thread
 
-    printf("Starting Test 1\n"); //Customers always take the shortest line, but no 2 customers ever choose the same shortest line at the same time
-    currentTest = 1;
-    customerCount = 5;
-    clerkCount = 2;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 0; countOfEachClerkType[3] = 0;
+    printf("Starting Test 1\n");
 
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 2\n"); //Managers only read one from one Clerk's total money received, at a time
-    currentTest = 2;
-    customerCount = 5;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 3\n"); //Customers do not leave until they are given their passport by the Cashier. 
-                                 //The Cashier does not start on another customer until they know that the last Customer has left their area
-    currentTest = 3;
-    customerCount = 5;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 4\n"); //Clerks go on break when they have no one waiting in their line
-    currentTest = 4;
-    customerCount = 1;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 5\n"); //Managers get Clerks off their break when lines get too long
-    currentTest = 5;
-    customerCount = 7;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-
-    printf("Starting Test 6\n"); //Total sales never suffers from a race condition
-    currentTest = 6;
-    customerCount = 25;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
 }
 
 int chooseCustomerFromLine(int myLine) {
@@ -730,15 +675,15 @@ int chooseCustomerFromLine(int myLine) {
         cout << "@@@@@@@@@@@@@ " << currentThread->getName() << "::::: Has Signaled using clerkLock[" << myLine << "]" << endl;
     }else{*/
     // if(senatorLineCount == 0) {
-        bool testFlag = false;
         do {
-            testFlag = false;
+        // bool testFlag = true;
+        // while(testFlag) {
             if(senatorLineCount > 0 && clerkLock[myLine]->getLockOwner() == NULL){
-                clerkSenatorCVLock[myLine]->Acquire();
-                clerkSenatorCV[myLine]->Signal(clerkSenatorCVLock[myLine]);
-                clerkSenatorCV[myLine]->Wait(clerkSenatorCVLock[myLine]);
+                clerkSenatorCVLock->Acquire();
+                clerkSenatorCV[myLine]->Signal(clerkSenatorCVLock);
+                clerkSenatorCV[myLine]->Wait(clerkSenatorCVLock);
                 clerkStates[myLine] = BUSY;
-                testFlag = true;
+                clerkSenatorCVLock->Release();
             }else{
                 clerkLineLock->Acquire();
                 if(clerkBribeLineCount[myLine] > 0) {
@@ -753,40 +698,37 @@ int chooseCustomerFromLine(int myLine) {
                     // testFlag = false;
                 // } else if(clerkLock[myLine]->getLockOwner() != NULL){
                 //     clerkStates[myLine] = BUSY; //redundant setting
-
+                    
                 }else{
                     //TODO: ONBREAK CODE
                     breakLock[myLine]->Acquire();
-                  //  clerkLock[myLine]->Acquire(); //TODO: will this prevent race condition?
+                    clerkLock[myLine]->Acquire(); //TODO: will this prevent race condition?
                     cout << currentThread->getName() << ": I'm going on break" <<clerkBribeLineCount[myLine] +clerkLineCount[myLine]<< endl;
                     clerkStates[myLine] = ONBREAK;
                     clerkLineLock->Release();
                     breakCV[myLine]->Wait(breakLock[myLine]);
+                    clerkLineLock->Acquire();
                     clerkStates[myLine] = AVAILABLE;
-                  //  clerkLock[myLine]->Release();
+                    clerkLock[myLine]->Release();
                     breakLock[myLine]->Release();
-                }
+                }    
             }
-
+            
         } while(clerkStates[myLine] != BUSY); //TODO: must be a better way of doing this
+    // }
+        
     clerkLock[myLine]->Acquire();
     // }
     clerkLineLock->Release();
     //wait for customer
-    if(testFlag){
-      clerkSenatorCV[myLine]->Signal(clerkSenatorCVLock[myLine]);
-      clerkSenatorCVLock[myLine]->Release();
-    }
     clerkCV[myLine]->Wait(clerkLock[myLine]);
     //Do my job -> customer waiting
     return customerData[myLine]; //HUNG: Customer would have set the customerData[myLine] to be their custNumber
 }
 
 void clerkSignalsNextCustomer(int myLine) {
-
     clerkCV[myLine]->Signal(clerkLock[myLine]);
     clerkCV[myLine]->Wait(clerkLock[myLine]);
-
     clerkLock[myLine]->Release();
 }
 
@@ -836,7 +778,7 @@ void PassportClerk(int myLine) {
                 currentThread->Yield();
             }
             // clerkStates[myLine] = AVAILABLE;
-
+            
             int clerkMessedUp = rand() % 100;
             if(clerkMessedUp <= 5) { //Send to back of line
                 cout << currentThread->getName() << ": Messed up for Customer_" << custNumber<< ". Sending customer to back of line."<<endl;
@@ -847,8 +789,8 @@ void PassportClerk(int myLine) {
                 customerAttributes[custNumber].hasCertification = true;
             }
 
-
-        }
+            
+        } 
         // else { //customer gets sent to back of line
         //     cout << "SENT TO BACK OF LINE &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << endl;
         //     int waitTime = rand() % 900 + 100;
@@ -883,11 +825,11 @@ void Cashier(int myLine) {
                 customerAttributes[custNumber].isDone = true;
                 // clerkStates[myLine] = AVAILABLE;
                 // cout << "Customer_" << custNumber << ": I'm DONE ##############################################################" << endl;
-
+            
 
             }
 
-        }
+        } 
         // else { //customer gets sent to back of line
         //     cout << "SENT TO BACK OF LINE ============================================================" << endl;
         //     int waitTime = rand() % 900 + 100;
@@ -910,49 +852,50 @@ void Customer(int custNumber) {
         int lineSize = 1000;
         //cout << currentThread->getName() << ": I'm choosing a line: ";
         for(int i = 0; i < clerkCount; i++) {
-            int totalLineCount = clerkLineCount[i]+clerkBribeLineCount[i];
-            if(!customerAttributes[custNumber].applicationIsFiled &&
-                //customerAttributes[custNumber].likesPicture &&
-                !customerAttributes[custNumber].hasCertification &&
-                !customerAttributes[custNumber].isDone &&
+            if(!customerAttributes[custNumber].applicationIsFiled && 
+                //customerAttributes[custNumber].likesPicture && 
+                !customerAttributes[custNumber].hasCertification && 
+                !customerAttributes[custNumber].isDone && 
                 clerkTypes[i] == "ApplicationClerk") {
                 cout << "    " << currentThread->getName() << "::: ApplicationClerk chosen" << endl;
-                if(totalLineCount < lineSize ) { //&& clerkStates[i] != ONBREAK
+                if(clerkLineCount[i] < lineSize ) { //&& clerkStates[i] != ONBREAK 
                     myLine = i;
-                    lineSize = totalLineCount;
+                    lineSize = clerkLineCount[i];
                 }
-            } else if(//customerAttributes[custNumber].applicationIsFiled &&
-                      !customerAttributes[custNumber].likesPicture &&
-                      !customerAttributes[custNumber].hasCertification &&
-                      !customerAttributes[custNumber].isDone &&
+            } else if(//customerAttributes[custNumber].applicationIsFiled && 
+                      !customerAttributes[custNumber].likesPicture && 
+                      !customerAttributes[custNumber].hasCertification && 
+                      !customerAttributes[custNumber].isDone && 
                       clerkTypes[i] == "PictureClerk") {
                 cout << "    " << currentThread->getName() << "::: PictureClerk chosen" << endl;
-                if(totalLineCount < lineSize) {//&& clerkStates[i] != ONBREAK
+                if(clerkLineCount[i] < lineSize) {//&& clerkStates[i] != ONBREAK 
                     myLine = i;
-                    lineSize = totalLineCount;
+                    lineSize = clerkLineCount[i];
                 }
-            } else if(customerAttributes[custNumber].applicationIsFiled &&
-                      customerAttributes[custNumber].likesPicture &&
-                      !customerAttributes[custNumber].hasCertification &&
-                      !customerAttributes[custNumber].isDone &&
+            } else if(customerAttributes[custNumber].applicationIsFiled && 
+                      customerAttributes[custNumber].likesPicture && 
+                      !customerAttributes[custNumber].hasCertification && 
+                      !customerAttributes[custNumber].isDone &&  
                       clerkTypes[i] == "PassportClerk") {
                 cout << "    " << currentThread->getName() << "::: PassportClerk chosen" << endl;
-                if(totalLineCount < lineSize) {// && clerkStates[i] != ONBREAK
+                if(clerkLineCount[i] < lineSize) {// && clerkStates[i] != ONBREAK 
                     myLine = i;
-                    lineSize = totalLineCount;
+                    lineSize = clerkLineCount[i];
                 }
-            } else if(customerAttributes[custNumber].applicationIsFiled &&
-                      customerAttributes[custNumber].likesPicture &&
-                      customerAttributes[custNumber].hasCertification &&
-                      !customerAttributes[custNumber].isDone &&
+            } else if(customerAttributes[custNumber].applicationIsFiled && 
+                      customerAttributes[custNumber].likesPicture && 
+                      customerAttributes[custNumber].hasCertification && 
+                      !customerAttributes[custNumber].isDone &&  
                       clerkTypes[i] == "Cashier") {
                 cout << "    " << currentThread->getName() << "::: Cashier chosen" << endl;
-                if(totalLineCount < lineSize) {  //&& clerkStates[i] != ONBREAK
+                if(clerkLineCount[i] < lineSize) {  //&& clerkStates[i] != ONBREAK 
                     myLine = i;
-                    lineSize = totalLineCount;
+                    lineSize = clerkLineCount[i];
                 }
             }
         }
+
+        cout << myLine << endl;
 
         if(myLine == -1) {
             cout << "customerAttributes[custNumber].applicationIsFiled" << customerAttributes[custNumber].applicationIsFiled << endl;
@@ -1020,87 +963,44 @@ void Senator(int custNumber){
     if(senatorLineCount > 0){
         senatorLineCV->Wait(senatorLock);
     }
-
-    cout <<"1111111111" << endl;
-    for(int i = 0; i < clerkCount; i++){
-        clerkSenatorCVLock[i]->Acquire();
-    }
-
-        cout <<"2222222222"<< endl;
     senatorLineCount++;
+    clerkSenatorCVLock->Acquire();
     for(int i = 0; i < clerkCount; i++){
-        clerkSenatorCV[i]->Wait(clerkSenatorCVLock[i]);
-        cout << "Getting confirmation from clerk "<< i << endl;
+        clerk
     }
-
-
-        cout <<"333333333333333"<< endl;
     int myLine = 0;
     while(!customerAttributes[custNumber].isDone) {
         for(int i = 0; i < clerkCount; i++) {
-            if(!customerAttributes[custNumber].applicationIsFiled &&
-                //customerAttributes[custNumber].likesPicture &&
-                !customerAttributes[custNumber].hasCertification &&
-                !customerAttributes[custNumber].isDone &&
+            if(!customerAttributes[custNumber].applicationIsFiled && 
+                //customerAttributes[custNumber].likesPicture && 
+                !customerAttributes[custNumber].hasCertification && 
+                !customerAttributes[custNumber].isDone && 
                 clerkTypes[i] == "ApplicationClerk") {
                 cout << "    " << currentThread->getName() << "::: ApplicationClerk chosen" << endl;
                 myLine = i;
-            } else if(//customerAttributes[custNumber].applicationIsFiled &&
-                      !customerAttributes[custNumber].likesPicture &&
-                      !customerAttributes[custNumber].hasCertification &&
-                      !customerAttributes[custNumber].isDone &&
+            } else if(//customerAttributes[custNumber].applicationIsFiled && 
+                      !customerAttributes[custNumber].likesPicture && 
+                      !customerAttributes[custNumber].hasCertification && 
+                      !customerAttributes[custNumber].isDone && 
                       clerkTypes[i] == "PictureClerk") {
                 cout << "    " << currentThread->getName() << "::: PictureClerk chosen" << endl;
                 myLine = i;
-            } else if(customerAttributes[custNumber].applicationIsFiled &&
-                      customerAttributes[custNumber].likesPicture &&
-                      !customerAttributes[custNumber].hasCertification &&
-                      !customerAttributes[custNumber].isDone &&
+            } else if(customerAttributes[custNumber].applicationIsFiled && 
+                      customerAttributes[custNumber].likesPicture && 
+                      !customerAttributes[custNumber].hasCertification && 
+                      !customerAttributes[custNumber].isDone &&  
                       clerkTypes[i] == "PassportClerk") {
                 cout << "    " << currentThread->getName() << "::: PassportClerk chosen" << endl;
                 myLine = i;
-            } else if(customerAttributes[custNumber].applicationIsFiled &&
-                      customerAttributes[custNumber].likesPicture &&
-                      customerAttributes[custNumber].hasCertification &&
-                      !customerAttributes[custNumber].isDone &&
+            } else if(customerAttributes[custNumber].applicationIsFiled && 
+                      customerAttributes[custNumber].likesPicture && 
+                      customerAttributes[custNumber].hasCertification && 
+                      !customerAttributes[custNumber].isDone &&  
                       clerkTypes[i] == "Cashier") {
                 cout << "    " << currentThread->getName() << "::: Cashier chosen" << endl;
                 myLine = i;
             }
         }
-            cout <<"44444444444444"<< endl;
-        clerkSenatorCV[myLine]->Signal(clerkSenatorCVLock[myLine]);
-
-            cout <<"555555555555"<< endl;
-        clerkSenatorCV[myLine]->Wait(clerkSenatorCVLock[myLine]);
-
-        clerkSenatorCVLock[myLine]->Release();
-            cout <<"666666666"<< endl;
-        clerkLock[myLine]->Acquire();
-        //Give my data to my clerk
-
-            cout <<"77777777777"<< endl;
-        customerData[myLine] = custNumber;
-        clerkCV[myLine]->Signal(clerkLock[myLine]);
-
-                    cout <<"8888888888"<< endl;
-        //wait for clerk to do their job
-        clerkCV[myLine]->Wait(clerkLock[myLine]);
-       //Read my data
-
-                   cout <<"999999999"<< endl;
-
-      }
-
-      senatorLineCount--;
-
-  for(int i = 0 ; i < clerkCount ; i++){
-    clerkCV[i]->Signal(clerkLock[i]);
-    clerkLock[i]->Release();
-    clerkSenatorCVLock[i]->Release();
-
-  }
-  senatorLock->Release();
   clerkLineLock->Release();
 }
 
@@ -1111,7 +1011,6 @@ void wakeUpClerks() {
     // }
     for(int i = 0; i < clerkCount; ++i) {
         if(clerkStates[i] == ONBREAK) {
-            cout <<"Waking this clerk up, people in normal line | bribe line : " << clerkLineCount[i]  << "|"<< clerkBribeLineCount[i]<<  endl;
             breakLock[i]->Acquire();
             breakCV[i]->Signal(breakLock[i]);
             breakLock[i]->Release();
@@ -1131,11 +1030,11 @@ void printMoney() {
 
 void Manager() {
      do {
-        IntStatus oldLevel = interrupt->SetLevel(IntOff);
+        IntStatus oldLevel = interrupt->SetLevel(IntOff); 
         int totalLineCount = 0;
         for(int i = 0; i < clerkCount; ++i) {
             totalLineCount += clerkLineCount[i] + clerkBribeLineCount[i];
-            if(totalLineCount >= 2 ) { // || outsideLineCount > 0
+            if(totalLineCount >= 0 ) { // || outsideLineCount > 0
                 wakeUpClerks();
                 break;
             }
@@ -1155,21 +1054,21 @@ bool customersAreAllDone() {
     cout << "***********************************************************" << endl;
     int boolCount = 0;
     for(int i = 0; i < customerCount; ++i) {
-        cout << "Customer " << i << " " << customerAttributes[i].applicationIsFiled <<
-                                           customerAttributes[i].likesPicture <<
-                                           customerAttributes[i].hasCertification <<
+        cout << "Customer " << i << " " << customerAttributes[i].applicationIsFiled << 
+                                           customerAttributes[i].likesPicture << 
+                                           customerAttributes[i].hasCertification << 
                                            customerAttributes[i].isDone << endl;
         boolCount += customerAttributes[i].isDone;
     }
 
     for(int i = 0; i < senatorCount; ++i) {
-        i += 50;
-        cout << "Senator " << i << " " << customerAttributes[i].applicationIsFiled <<
-                                           customerAttributes[i].likesPicture <<
-                                           customerAttributes[i].hasCertification <<
+        i += 50; 
+        cout << "Senator " << i << " " << customerAttributes[i].applicationIsFiled << 
+                                           customerAttributes[i].likesPicture << 
+                                           customerAttributes[i].hasCertification << 
                                            customerAttributes[i].isDone << endl;
         i -= 50;
-    }
+    } 
 
     //HUNG'S DEBUG
     for(int i =0 ; i < clerkCount; i++){
@@ -1177,13 +1076,18 @@ bool customersAreAllDone() {
             cout << clerkLock[i]->getName() << ": lock owner is " << clerkLock[i]->getLockOwner()->getName() << endl;
         }else{
             cout << clerkLock[i]->getName() << ": has no owner"  << endl;
+           
         }
     }
-    cout << "customer 0" << customerAttributes[0].isDone << endl;
 
+ 
     if(boolCount == customerCount) {
         return true;
     }
+    
+
+
+
     return false;
 }
 

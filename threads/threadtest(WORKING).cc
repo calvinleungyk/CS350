@@ -377,7 +377,7 @@ void TestSuite() {
 
     // Wait for Test 1 to complete
     for (  i = 0; i < 2; i++ )
-        t1_done.P();
+    t1_done.P();
 
     // Test 2
 
@@ -408,6 +408,7 @@ void TestSuite() {
 
     // Wait for Test 3 to complete
     for (  i = 0; i < 2; i++ ) {
+        printf("***************BEFORE****************\n");
         if(t3_l1.getLockOwner() != NULL) {
             printf("This is the current lockOwner: %s\n", t3_l1.getLockOwner()->getName());
         } else {
@@ -416,7 +417,11 @@ void TestSuite() {
 
         t3_done.P();
         scheduler->Print();
+        printf("^^^^^^^^^^^^^^");
         t3_l1.Print();
+
+
+        printf("***************AFTER*****************\n");
     }
 
     // Test 4
@@ -458,7 +463,6 @@ void TestSuite() {
 
 //HUNG: Some constants, since we are writing our own test cases,
 //the number of clerks and customers is totally up to us
-int currentTest = 1;
 const int CLERK_NUMBER = 20;
 const int CUSTOMER_NUMBER = 60;
 const int CLERK_TYPES = 4;
@@ -643,9 +647,9 @@ void createSenatorThreads(Thread *t){
     }
 }
 
-void createTestVariables(Thread* t, int countOfEachClerkType[]) {
+void createTestVariables(Thread* t) {
     createClerkLocksAndConditions();
-    clerkFactory(countOfEachClerkType);
+    clerkFactory();
     createClerkThreads(t);
     createCustomerThreads(t);
     createSenatorThreads(t);
@@ -662,61 +666,17 @@ void Part2() {
     // TODO: start Manager thread
     //t->Fork((VoidFunctionPtr)Senator,i); // TODO: start Senator thread
 
-    printf("Starting Test 1\n"); //Customers always take the shortest line, but no 2 customers ever choose the same shortest line at the same time
-    currentTest = 1;
+    printf("Starting Test 1\n");
     customerCount = 5;
     clerkCount = 2;
     senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 0; countOfEachClerkType[3] = 0;
+    countOfEachClerkType = {1,1,0,0};
+    createTestVariables();
 
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 2\n"); //Managers only read one from one Clerk's total money received, at a time
-    currentTest = 2;
-    customerCount = 5;
+    printf("Starting Test 2\n");
+    customerCount = ;
     clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 3\n"); //Customers do not leave until they are given their passport by the Cashier. 
-                                 //The Cashier does not start on another customer until they know that the last Customer has left their area
-    currentTest = 3;
-    customerCount = 5;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 4\n"); //Clerks go on break when they have no one waiting in their line
-    currentTest = 4;
-    customerCount = 1;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-    printf("Starting Test 5\n"); //Managers get Clerks off their break when lines get too long
-    currentTest = 5;
-    customerCount = 7;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
-
-
-    printf("Starting Test 6\n"); //Total sales never suffers from a race condition
-    currentTest = 6;
-    customerCount = 25;
-    clerkCount = 4;
-    senatorCount = 0;
-    countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
-
-    createTestVariables(countOfEachClerkType);
+    createTestVariables();
 }
 
 int chooseCustomerFromLine(int myLine) {
