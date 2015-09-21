@@ -1240,6 +1240,9 @@ void printMoney() {
     cout << "Manager has counted a total of " << totalMoney << " for the passport office" << endl << endl;
 }
 
+int prevTotalBoolCount = 0;
+int currentTotalBoolCount = 0;
+
 void Manager() {
      do {
         IntStatus oldLevel = interrupt->SetLevel(IntOff); //disable interrupts
@@ -1282,12 +1285,13 @@ bool customersAreAllDone() {
         i -= 50;
     }
 
-    int totalBoolCount = 0;
+    prevTotalBoolCount = currentTotalBoolCount;
+    currentTotalBoolCount = 0;
     for(int i = 0; i < customerCount; ++i) {
-        totalBoolCount += customerAttributes[i].applicationIsFiled + customerAttributes[i].likesPicture + customerAttributes[i].hasCertification + customerAttributes[i].isDone;
+        currentTotalBoolCount += customerAttributes[i].applicationIsFiled + customerAttributes[i].likesPicture + customerAttributes[i].hasCertification + customerAttributes[i].isDone;
     }
-    if(allCustomerStateIsSame) {
-        totalBoolCount = 4 * (customerCount + senatorCount);
+    if(prevTotalBoolCount == currentTotalBoolCount) {
+        return true;
     }
 
     //HUNG'S DEBUG
