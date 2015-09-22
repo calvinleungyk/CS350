@@ -535,6 +535,7 @@ void clerkFactory(int countOfEachClerkType[]) {
             clerkArray[i] = countOfEachClerkType[i];
         }
     }
+    // CL: print statements
     cout << "Number of ApplicationClerks = " <<  clerkArray[0] << endl;
     cout << "Number of PictureClerks = " << clerkArray[1] << endl;
     cout << "Number of PassportClerks = " << clerkArray[2] << endl;
@@ -542,7 +543,8 @@ void clerkFactory(int countOfEachClerkType[]) {
     cout << "Number of Senators = " << senatorCount << endl;
 }
 
-// CL: 
+// CL: Parameter: Thread*
+//     Summary: 
 
 void createClerkThreads(Thread* t) {
     int clerkNumber = 0;
