@@ -1114,7 +1114,6 @@ void Customer(int custNumber) {
         clerkLock[myLine]->Acquire();
         //Give my data to my clerk
         customerData[myLine] = custNumber;
-        cout << currentThread->getName() << " has given SSN " << custNumber << " to " << clerkTypes[myLine] << "_" << myLine << endl;
 
         clerkCV[myLine]->Signal(clerkLock[myLine]);
         //wait for clerk to do their job
@@ -1271,6 +1270,10 @@ void wakeUpClerks() {
     }
 }
 
+// CL: Parameter: -
+//     Summary: print all the money as manager checks the money earned by each clerk
+//     Return value: void
+
 void printMoney() {
     int totalMoney = 0;
     int applicationMoney = 0;
@@ -1289,7 +1292,6 @@ void printMoney() {
             cashierMoney += clerkMoney[i];
         }
         totalMoney += clerkMoney[i];
-        cout << "Manager checking money earned by " << clerkTypes[i] << "_" << i << ": " << clerkMoney[i] << endl;
     }
 
     cout << "Manager has counted a total of " << applicationMoney << " for ApplicationClerks" << endl;
@@ -1301,6 +1303,10 @@ void printMoney() {
 
 int prevTotalBoolCount = 0;
 int currentTotalBoolCount = 0;
+
+// CL: Parameter: -
+//     Summary: manager code, interrupts are disabled
+//     Return value: void
 
 void Manager() {
      do {
@@ -1330,19 +1336,12 @@ void Manager() {
 bool customersAreAllDone() {
     int boolCount = 0;
     for(int i = 0; i < customerCount; ++i) {
-        cout << "Customer " << i << " " << customerAttributes[i].applicationIsFiled <<
-                                           customerAttributes[i].likesPicture <<
-                                           customerAttributes[i].hasCertification <<
-                                           customerAttributes[i].isDone << endl;
+    
         boolCount += customerAttributes[i].isDone;
     }
 
     for(int i = 0; i < senatorCount; ++i) {
         i += 50;
-        cout << "Senator " << i << " " << customerAttributes[i].applicationIsFiled <<
-                                           customerAttributes[i].likesPicture <<
-                                           customerAttributes[i].hasCertification <<
-                                           customerAttributes[i].isDone << endl;
         boolCount += customerAttributes[i].isDone;
         i -= 50;
     }
