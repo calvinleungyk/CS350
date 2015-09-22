@@ -376,7 +376,7 @@ void TestSuite() {
     t->Fork((VoidFunctionPtr)t1_t3,0);
 
     // Wait for Test 1 to complete
-    for (  i = 0; i < 2; i++ )
+    for (i = 0; i < 2; i++ )
         t1_done.P();
 
     // Test 2
@@ -664,6 +664,7 @@ void createTestVariables(Thread* t, int countOfEachClerkType[]) {
     createClerkThreads(t);
     createCustomerThreads(t);
     createSenatorThreads(t);
+    t = new Thread("Manager");
     t->Fork((VoidFunctionPtr)Manager,0);
 }
 
@@ -678,10 +679,10 @@ void Part2() {
 
     if(testChosen == 1) {
         printf("Starting Test 1\n"); //Customers always take the shortest line, but no 2 customers ever choose the same shortest line at the same time
-        customerCount = 5;
-        clerkCount = 4;
+        customerCount = 10;
+        clerkCount = 6;
         senatorCount = 0;
-        countOfEachClerkType[0] = 1; countOfEachClerkType[1] = 1; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
+        countOfEachClerkType[0] = 2; countOfEachClerkType[1] = 2; countOfEachClerkType[2] = 1; countOfEachClerkType[3] = 1;
 
         createTestVariables(t, countOfEachClerkType);
     } else if(testChosen == 2) {
@@ -803,7 +804,6 @@ int chooseCustomerFromLine(int myLine) {
                     breakLock[myLine]->Release();
                 }
             }
-
         } while(clerkStates[myLine] != BUSY); //TODO: must be a better way of doing this
     clerkLock[myLine]->Acquire();
     // }
@@ -977,9 +977,19 @@ void Customer(int custNumber) {
         int myLine = -1;
         int lineSize = 1000;
         //cout << currentThread->getName() << ": I'm choosing a line: ";
+        bool pickedApplication;
+        bool pickedPicture;
+        if(!customerAttributes[custNumber].applicationIsFiled && !customerAttributes[custNumber].likesPicture) {
+            pickedApplication = (bool) (rand() % 2);
+            pickedPicture = !pickedApplication;
+        } else {
+            pickedApplication = true;
+            pickedPicture = true;
+        }
         for(int i = 0; i < clerkCount; i++) {
-            int totalLineCount = clerkLineCount[i]+clerkBribeLineCount[i];
-            if(!customerAttributes[custNumber].applicationIsFiled &&
+            int totalLineCount = clerkLineCount[i] + clerkBribeLineCount[i];
+            if(pickedApplication &&
+                !customerAttributes[custNumber].applicationIsFiled &&
                 //customerAttributes[custNumber].likesPicture &&
                 !customerAttributes[custNumber].hasCertification &&
                 !customerAttributes[custNumber].isDone &&
@@ -991,6 +1001,7 @@ void Customer(int custNumber) {
                     lineSize = totalLineCount;
                 }
             } else if(//customerAttributes[custNumber].applicationIsFiled &&
+                      pickedPicture &&
                       !customerAttributes[custNumber].likesPicture &&
                       !customerAttributes[custNumber].hasCertification &&
                       !customerAttributes[custNumber].isDone &&
@@ -1023,14 +1034,6 @@ void Customer(int custNumber) {
             }
         }
 
-        if(clerkTypes[myLine] == "PassportClerk") {
-            switch(testChosen) {
-                case 1:
-                    customerAttributes[custNumber].hasCertification = true;
-                    customerAttributes[custNumber].isDone = true;
-                    break;
-            }
-        }
         // if(myLine == -1) {
             
         // }
@@ -1080,7 +1083,7 @@ void Customer(int custNumber) {
             clerkLock[myLine]->Acquire();
             //Give my data to my clerk
             customerData[myLine] = custNumber;
-                    cout << currentThread->getName() << " has given SSN "<< custNumber << " to " << clerkTypes[myLine] << "_" << myLine << endl;
+            cout << currentThread->getName() << " has given SSN "<< custNumber << " to " << clerkTypes[myLine] << "_" << myLine << endl;
 
             clerkCV[myLine]->Signal(clerkLock[myLine]);
             //wait for clerk to do their job
@@ -1291,7 +1294,7 @@ bool customersAreAllDone() {
         currentTotalBoolCount += customerAttributes[i].applicationIsFiled + customerAttributes[i].likesPicture + customerAttributes[i].hasCertification + customerAttributes[i].isDone;
     }
     if(prevTotalBoolCount == currentTotalBoolCount) {
-        return true;
+        wakeUpClerks();
     }
 
     //HUNG'S DEBUG
