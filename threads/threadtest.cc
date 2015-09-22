@@ -458,22 +458,23 @@ void TestSuite() {
 
 //HUNG: Some constants, since we are writing our own test cases,
 //the number of clerks and customers is totally up to us
-int testChosen = 1;
-const int CLERK_NUMBER = 20;
-const int CUSTOMER_NUMBER = 60;
-const int CLERK_TYPES = 4;
-const int SENATOR_NUMBER = 10;
-int clerkCount = 0; //TODO make this NOT const and change to user input with cin >>
-int customerCount = 0; //TODO make this NOT const and change to user input with cin >>
-int senatorCount = 0; //TODO make this NOT const and change to user input with cin >>
-int senatorLineCount = 0;
+int testChosen = 1; // CL: indicate test number (1-7) or full program (0)
+const int CLERK_NUMBER = 20; // CL: default clerknumbers for the full case
+const int CUSTOMER_NUMBER = 60; // CL: default customer numbers
+const int CLERK_TYPES = 4; // CL: 4 types of clerks so that static info/ string can be extracted by array access later
+const int SENATOR_NUMBER = 10; // CL: number of senators
+int clerkCount = 0;  // CL: number of total clerks of the 4 types that can be modified
+int customerCount = 0; // CL: number of customers that can be modified
+int senatorCount = 0; // CL: number of senators that can be modified
+int senatorLineCount = 0; // CL: number of senators in a line at any given time
 
+// initialize locks and arrays for linecount, clerk, customer, manager, senator information
 Lock* clerkLineLock = new Lock("ClerkLineLock");
-int clerkLineCount[CLERK_NUMBER];
-int clerkBribeLineCount[CLERK_NUMBER];
-enum ClerkState {AVAILABLE, BUSY, ONBREAK};
-ClerkState clerkStates[CLERK_NUMBER] = {AVAILABLE,AVAILABLE,AVAILABLE,AVAILABLE,AVAILABLE};
-Condition* clerkLineCV[CLERK_NUMBER];
+int clerkLineCount[CLERK_NUMBER]; // CL: number of customers in a clerk's regular line
+int clerkBribeLineCount[CLERK_NUMBER]; // CL: number of customers in a clerk's bribe line
+enum ClerkState {AVAILABLE, BUSY, ONBREAK}; // CL: enum for clerk's conditions
+ClerkState clerkStates[CLERK_NUMBER] = {AVAILABLE}; //state of each clerk is available in the beginning
+Condition* clerkLineCV[CLERK_NUMBER]; 
 Condition* clerkBribeLineCV[CLERK_NUMBER];
 Condition* clerkSenatorLineCV = new Condition("ClerkSenatorLineCV");
 Lock* clerkSenatorCVLock[CLERK_NUMBER];
@@ -485,9 +486,9 @@ Condition* breakCV[CLERK_NUMBER];
 Lock* senatorLock = new Lock("SenatorLock");
 // Condition* senatorCV = new Condition("SenatorCV");
 
-int outsideLineCount = 0;
-CustomerAttribute customerAttributes[CUSTOMER_NUMBER];
-int clerkMoney[CLERK_NUMBER] = {0};
+int outsideLineCount = 0; // CL: an outside line for customers to line up if senator is here, or other rare situations
+CustomerAttribute customerAttributes[CUSTOMER_NUMBER]; // CL: customer attributes, accessed by custNumber
+int clerkMoney[CLERK_NUMBER] = {0}; // CL: every clerk has no bribe money in the beginning
 //Senator control variables
 Condition* senatorLineCV = new Condition("SenatorLineCV");
 Condition* clerkSenatorCV[CLERK_NUMBER];
@@ -501,6 +502,9 @@ int clerkArray[CLERK_TYPES];
 
 Lock* breakLock[CLERK_NUMBER];
 
+// CL: parameter: A string to be parsed into a char*
+//     return value: char*
+
 char* cStringDeepCopy(string str) {
     char *cstr = new char[str.length() + 1];
     strcpy(cstr, str.c_str());
@@ -509,10 +513,14 @@ char* cStringDeepCopy(string str) {
     return cstr;
 }
 
+// CL: parameter: an int array that contains numbers of each clerk type 
+//     Summary: gets input from user or test, initialize and print out clerk numbers
+//     return value: void
+
 void clerkFactory(int countOfEachClerkType[]) {
     int tempClerkCount = 0;
     for(int i = 0; i < CLERK_TYPES; ++i) {
-        if(testChosen == 0) {
+        if(testChosen == 0) { // gets input from user if running full program, does not get input if test
             do {
                 cout << clerkTypesStatic[i];
                 cin >> tempClerkCount;
@@ -523,7 +531,7 @@ void clerkFactory(int countOfEachClerkType[]) {
             clerkCount += tempClerkCount;
             clerkArray[i] = tempClerkCount;    
         } else {
-            cout << clerkTypesStatic[i] << countOfEachClerkType[i] << endl;
+            // cout << clerkTypesStatic[i] << countOfEachClerkType[i] << endl;
             clerkArray[i] = countOfEachClerkType[i];
         }
     }
@@ -533,6 +541,8 @@ void clerkFactory(int countOfEachClerkType[]) {
     cout << "Number of CashiersClerks = " << clerkArray[3] << endl;
     cout << "Number of Senators = " << senatorCount << endl;
 }
+
+// CL: 
 
 void createClerkThreads(Thread* t) {
     int clerkNumber = 0;
@@ -937,7 +947,6 @@ void Cashier(int myLine) {
             
             clerkMoney[myLine] += 100;
             clerkStates[myLine] = BUSY;
-            cout << currentThread->getName() << "::starting to process money for Customer_" << custNumber << endl;
             int numYields = rand() % 80 + 20;
             for(int i = 0; i < numYields; ++i) {
                 currentThread->Yield();
